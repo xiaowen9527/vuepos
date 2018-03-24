@@ -34,8 +34,8 @@ export default {
 .main{
 	float: left;
 	width: 95%;
-	background-color: #3ff2f7;
 	height: 100%;
 	overflow: hidden;
+	background-color: #edf1f5;
 }
 </style>
