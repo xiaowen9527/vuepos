@@ -1,223 +1,315 @@
 <template>
-  <div class="pos">
-    <el-row>
-      <el-col :span="7" class="pos-order" id="order-list">
-        <el-tabs>
-          <el-tab-pane label="点餐">
-            <el-table border style="width:100%" :data="tableData">
-              <el-table-column prop="goodsName" label="商品名称"></el-table-column>
-              <el-table-column prop="count" label="数量" width="50"></el-table-column>
-              <el-table-column prop="price" label="金额" width="70"></el-table-column>
-              <el-table-column label="操作" width="100" fixed="right">
-                <template slot-scope="scoped">
-                    <el-button type="text">删除</el-button>
-                    <el-button type="text">增加</el-button>
-                </template>
-              </el-table-column>
-            </el-table>
-            <div class="div-btn">
-              <el-button type="warning">挂单</el-button>
-              <el-button type="danger">删除</el-button>
-              <el-button type="success">结账</el-button>
-            </div>
-          </el-tab-pane>
+    <div class="pos">
+        <div>
+            <el-row>
+                <el-col :span="7" class="pos-order" id="order-list">
+    
+                    <el-tabs>
+                        <el-tab-pane label="点餐">
+                            <el-table :data="tableData" border style="width: 100%">
+    
+                                <el-table-column prop="goodsName" label="商品"></el-table-column>
+                                <el-table-column prop="count" label="量" width="50"></el-table-column>
+                                <el-table-column prop="price" label="金额" width="70"></el-table-column>
+                                <el-table-column label="操作" width="100" fixed="right">
+                                    <template slot-scope="scope">
+                                        <el-button type="text" size="small" @click="delSingleGoods(scope.row)">删除</el-button>
+                                        <el-button type="text" size="small" @click="addOrderList(scope.row)">增加</el-button>
+    
+                                    </template>
+                                </el-table-column>
+                            </el-table>
 
-          <el-tab-pane label="挂单">
-              挂单
-          </el-tab-pane>
-             
-          <el-tab-pane label="外卖">
-              外卖
-          </el-tab-pane>
-        </el-tabs>
-      </el-col>
-      <el-col :span="17">
-        <div class="often-goods">
-          <div class="title">常用商品</div>
-          <div class="often-goods-list">
-            <ul>
-              <li v-for="goods in oftenGoods" :key="goods.id" @click="addOrderList">
-                <span>{{goods.goodsName}}</span>
-                <span class="o-price">¥{{goods.price}}元</span>
-              </li>
-            </ul>
-          </div>
+
+    
+                            <div class="totalDiv">
+                                <small>数量：</small>
+                                <strong>{{totalCount}}</strong> &nbsp;&nbsp;&nbsp;&nbsp;
+                                <small>总计：</small>
+                                <strong>{{totalMoney}}</strong> 元
+                            </div>
+    
+                            <div class="order-btn">
+                                <el-button type="danger" @click="delAllGoods()">删除</el-button>
+                                <el-button type="success" @click="checkOut()"> 结账</el-button>
+    
+                            </div>
+                        </el-tab-pane>
+    
+                    </el-tabs>
+    
+                </el-col>
+    
+                <!--商品展示-->
+                <el-col :span="17">
+                    <div class="often-goods">
+                        <div class="title">常用商品</div>
+                        <div class="often-goods-list">
+    
+                            <ul>
+                                <li v-for="goods in oftenGoods" :key="goods.goodsId" @click="addOrderList(goods)">
+                                    <span>{{goods.goodsName}}</span>
+                                    <span class="o-price">￥{{goods.price}}元</span>
+                                </li>
+    
+                            </ul>
+                        </div>
+                    </div>
+    
+                    <div class="goods-type">
+    
+                        <el-tabs>
+                            <el-tab-pane label="汉堡">
+                                <ul class='cookList'>
+    
+                                    <li v-for="goods in type0Goods" :key="goods.goodsId" @click="addOrderList(goods)">
+                                        <span class="foodImg">
+                                            <img :src="goods.goodsImg" width="100%">
+                                        </span>
+                                        <span class="foodName">{{goods.goodsName}}</span>
+                                        <span class="foodPrice">￥{{goods.price}}元</span>
+                                    </li>
+    
+                                </ul>
+                            </el-tab-pane>
+                            <el-tab-pane label="小食">
+                                <ul class='cookList'>
+                                    <li v-for="goods in type1Goods" :key="goods.goodsId" @click="addOrderList(goods)">
+                                        <span class="foodImg">
+                                            <img :src="goods.goodsImg" width="100%">
+                                        </span>
+                                        <span class="foodName">{{goods.goodsName}}</span>
+                                        <span class="foodPrice">￥{{goods.price}}元</span>
+                                    </li>
+                                </ul>
+                            </el-tab-pane>
+                            <el-tab-pane label="饮料">
+                                <ul class='cookList'>
+                                    <li v-for="goods in type2Goods" :key="goods.goodsId" @click="addOrderList(goods)">
+                                        <span class="foodImg">
+                                            <img :src="goods.goodsImg" width="100%">
+                                        </span>
+                                        <span class="foodName">{{goods.goodsName}}</span>
+                                        <span class="foodPrice">￥{{goods.price}}元</span>
+                                    </li>
+                                </ul>
+                            </el-tab-pane>
+                            <el-tab-pane label="套餐">
+                                <ul class='cookList'>
+                                    <li v-for="goods in type3Goods" :key="goods.goodsId" @click="addOrderList(goods)">
+                                        <span class="foodImg">
+                                            <img :src="goods.goodsImg" width="100%">
+                                        </span>
+                                        <span class="foodName">{{goods.goodsName}}</span>
+                                        <span class="foodPrice">￥{{goods.price}}元</span>
+                                    </li>
+                                </ul>
+                            </el-tab-pane>
+    
+                        </el-tabs>
+                    </div>
+    
+                </el-col>
+            </el-row>
         </div>
-
-        <div class="goods-type">
-          <el-tabs>
-            <el-tab-pane label="汉堡">
-              <div>
-                <ul class='cookList'>
-                    <li v-for="item in type0Goods" :key="item.id">
-                        <span class="foodImg"><img :src="item.goodsImg" width="100%"></span>
-                        <span class="foodName">{{item.goodsName}}</span>
-                        <span class="foodPrice">￥{{item.price}}元</span>
-                    </li>
-                </ul>
-              </div>
-            </el-tab-pane>
-            <el-tab-pane label="小食">
-                <ul class='cookList'>
-                    <li v-for="item in type1Goods" :key="item.id">
-                        <span class="foodImg"><img :src="item.goodsImg" width="100%"></span>
-                        <span class="foodName">{{item.goodsName}}</span>
-                        <span class="foodPrice">￥{{item.price}}元</span>
-                    </li>
-                </ul>              
-            </el-tab-pane>
-            <el-tab-pane label="饮料">
-                <ul class='cookList'>
-                    <li v-for="item in type2Goods" :key="item.id">
-                        <span class="foodImg"><img :src="item.goodsImg" width="100%"></span>
-                        <span class="foodName">{{item.goodsName}}</span>
-                        <span class="foodPrice">￥{{item.price}}元</span>
-                    </li>
-                </ul>              
-            </el-tab-pane>
-            <el-tab-pane label="套餐">
-                <ul class='cookList'>
-                    <li v-for="item in type3Goods" :key="item.id">
-                        <span class="foodImg"><img :src="item.goodsImg" width="100%"></span>
-                        <span class="foodName">{{item.goodsName}}</span>
-                        <span class="foodPrice">￥{{item.price}}元</span>
-                    </li>
-                </ul>              
-            </el-tab-pane>
-          </el-tabs>
-        </div>
-
-      </el-col>
-    </el-row>
-  </div>
+    </div>
 </template>
 
 <script>
-import axios from 'axios';
+import axios from "axios";
 export default {
-  name: 'pos',
-  data(){
-    return{
-      tableData: [],
-      oftenGoods:[],
-      type0Goods:[],
-      type1Goods:[],
-      type2Goods:[],
-      type3Goods:[],
-    }
+  name: "Pos",
+  data() {
+    return {
+      tableData: [], //订单列表的值
+      oftenGoods: [],
+      type0Goods: [],
+      type1Goods: [],
+      type2Goods: [],
+      type3Goods: [],
+      totalMoney: 0, //总金额
+      totalCount: 0 //总数量
+    };
   },
-  //创建之前执行
-  created:function(){
-    axios.get('http://jspang.com/DemoApi/oftenGoods.php')
-    .then(response=>{
-      this.oftenGoods = response.data;
-    })
-    .catch(error=>{
-      alert('网络访问错误');
-    })
-
-    axios.get('http://jspang.com/DemoApi/typeGoods.php')
-    .then(response=>{
-      this.type0Goods = response.data[0];
-      this.type1Goods = response.data[1];
-      this.type2Goods = response.data[2];
-      this.type3Goods = response.data[3];     
-    })
-    .catch(error=>{
-      alert('网络访问错误');
-    })
-  } , 
-  //挂在之后执行
-  mounted:function(){
+  mounted: function() {
     var orderHeight = document.body.clientHeight;
-    document.getElementById('order-list').style.height = orderHeight + 'px';
+    document.getElementById("order-list").style.height = orderHeight + "px";
   },
-  methods:{
-    addOrderList(goods){
-      //商品是否已经存在于订单列表中
-        let isHave = false;
-        for(let i=0;i<this.tableData.length;i++){
-          if(this.tableData[i].goodsId == goods.goodsId){
-            isHave = true;
-          }
+  created() {
+    //读取常用商品列表
+    axios
+      .get("http://jspang.com/DemoApi/oftenGoods.php")
+      .then(response => {
+        //console.log(response);
+        this.oftenGoods = response.data;
+      })
+      .catch(error => {
+        console.log(error);
+        alert("网络错误，不能访问");
+      });
+    //读取分类商品列表
+    axios
+      .get("http://jspang.com/DemoApi/typeGoods.php")
+      .then(response => {
+        //console.log(response);
+        //this.oftenGoods=response.data;
+        this.type0Goods = response.data[0];
+        this.type1Goods = response.data[1];
+        this.type2Goods = response.data[2];
+        this.type3Goods = response.data[3];
+      })
+      .catch(error => {
+        console.log(error);
+        alert("网络错误，不能访问");
+      });
+  },
+  methods: {
+    //添加订单列表的方法
+    addOrderList(goods) {
+      //console.log(goods);
+      this.totalMoney = 0; //每次添加订单的时候总金额清零方便重新计算
+      this.totalCount = 0; //每次添加订单的时候总数量清零方便重新计算
+      let isHave = false;
+      //判断是否这个商品已经存在于订单列表
+      for (let i = 0; i < this.tableData.length; i++) {
+        if (this.tableData[i].goodsId == goods.goodsId) {
+          isHave = true; //存在
         }
-      //根据判断的值编写业务逻辑
-        if(isHave){
-          //改变列表中商品的数量
-          let arr = this.tableData.filter(o=>o.goodsId == goods.goodsId);
-          arr[0].count++;
-        }else{
-          let newGoods={goodsId:goods.goodsId,goodsName:goods.goodsName,price:goods.price,count:1};
-                 this.tableData.push(newGoods);
-
-        }
+      }
+      //根据isHave的值判断订单列表中是否已经有此商品
+      if (isHave) {
+        //存在就进行数量添加
+        let arr = this.tableData.filter(o => o.goodsId == goods.goodsId);
+        arr[0].count++;
+        //console.log(arr);
+      } else {
+        //不存在就推入数组
+        let newGoods = {
+          goodsId: goods.goodsId,
+          goodsName: goods.goodsName,
+          price: goods.price,
+          count: 1
+        };
+        this.tableData.push(newGoods);
+      }
+      this.getAllMoney();
+    },
+    //删除单个商品
+    delSingleGoods(goods) {
+      this.tableData = this.tableData.filter(o => o.goodsId != goods.goodsId);
+      this.getAllMoney();
+    },
+    //删除所有商品
+    delAllGoods() {
+      this.tableData = [];
+      this.totalMoney = 0;
+      this.totalCount = 0;
+    },
+    //结账
+    checkOut() {
+      if(this.totalCount!=0){
+        this.$message({
+          message:'数量：'+this.totalCount+',总金额：'+this.totalMoney+',结账成功，谢谢惠顾',
+          type:'success'
+        })
+      }else{
+        this.$message.error('订单为空不能结账')
+      }
+        this.tableData = [];
+        this.totalMoney = 0;
+        this.totalCount = 0;      
+    },
+    //汇总数量和金额
+    getAllMoney() {
+      this.totalCount = 0;
+      this.totalMoney = 0;
+      if (this.tableData) {
+        //计算汇总金额和数量
+        this.tableData.forEach(Element => {
+          this.totalCount += Element.count;
+          this.totalMoney = this.totalMoney + Element.price * Element.count;
+        });
+      }
     }
   }
-  
-}
+};
 </script>
-
-
 <style scoped>
-.pos-order{
+.pos {
+  font-size: 12px;
+}
+.pos-order {
   background-color: #f9fafc;
   border-right: 1px solid #c0ccda;
 }
-.div-btn{
-  margin-top: 10px
+.order-btn {
+  margin-top: 10px;
+  text-align: center;
 }
-.title{
+.title {
   height: 20px;
   border-bottom: 1px solid #d3dce6;
   background-color: #f9fafc;
   padding: 10px;
-  text-align: left;
-} 
-.often-goods-list ul li{
+}
+.often-goods-list ul li {
   list-style: none;
   float: left;
   border: 1px solid #e5e9f2;
   padding: 10px;
-  margin: 10px;
-  background-color: #ffffff;
+  margin: 5px;
+  background-color: #fff;
+  cursor: pointer;
 }
-.o-price{
-  color: #5887ff;
-}
-.goods-type{
+.goods-type {
   clear: both;
 }
-.cookList li{
-    list-style: none;
-    width:23%;
-    border:1px solid #E5E9F2;
-    height: auot;
-    overflow: hidden;
-    background-color:#fff;
-    padding: 2px;
-    float:left;
-    margin: 2px;
+.o-price {
+  color: #58b7ff;
 }
-.cookList li span{
-    
-    display: block;
-    float:left;
+.often-goods-list {
+  border-bottom: 1px solid #c0ccda;
+  height: auto;
+  overflow: hidden;
+  padding-bottom: 10px;
+  background-color: #f9fafc;
 }
-.foodImg{
-    width: 40%;
+.cookList li {
+  list-style: none;
+  width: 23%;
+  border: 1px solid #e5e9f2;
+  height: auot;
+  overflow: hidden;
+  background-color: #fff;
+  padding: 2px;
+  float: left;
+  margin: 2px;
+  cursor: pointer;
 }
-.foodName{
-    font-size: 16px;
-    padding-left: 10px;
-    color:brown;
-    display: inline;
-
+.cookList li span {
+  display: block;
+  float: left;
 }
-.foodPrice{
-    font-size: 16px;
-    padding-left: 10px;
-    padding-top:10px;
+.foodImg {
+  width: 40%;
 }
-
-
+.foodName {
+  font-size: 18px;
+  padding-left: 10px;
+  color: brown;
+}
+.foodPrice {
+  font-size: 16px;
+  padding-left: 10px;
+  padding-top: 10px;
+}
+.totalDiv {
+  height: auot;
+  overflow: hidden;
+  text-align: center;
+  font-size: 16px;
+  background-color: #fff;
+  border-bottom: 1px solid #e5e9f2;
+  padding: 10px;
+}
 </style>
